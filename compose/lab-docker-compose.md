@@ -223,7 +223,7 @@ docker compose logs -f -t frontend     # -t mostra a hora de cada linha
 
 Observe na saída do `up -d`: o `db` **não** foi recriado, só o serviço novo. O Compose só mexe no que mudou.
 
-Abra <http://localhost:8080>. A página aparece. Se clicar em **Enviar**, dá erro (`405`), e isso é esperado: ainda não existe nenhuma API.
+Abra <http://localhost:8080>. A página aparece. Se clicar em **Enviar**, dá erro (`404`), e isso é esperado: ainda não existe nenhuma API.
 
 **Experimento: bind mount em ação.**
 Abra o `web/index.html`, mude o `<h1>` para outro texto, salve e recarregue o navegador. Mudou **sem reiniciar nada**, porque o container lê direto a sua pasta. Guarde essa sensação: no próximo passo, com `build`, vai ser diferente.
@@ -971,7 +971,7 @@ Com `unless-stopped`, o Docker reinicia quando o processo **morre**, mas respeit
 
 ## Passo 10 — Tirando configuração do YAML: `.env` e variáveis
 
-**Conceitos:** arquivo `.env`, interpolação `${VAR}`, valor padrão `:-`, variável obrigatória `:?`, escapar `$$`.
+**Conceitos:** arquivo `.env`, interpolação `${VAR}`, valor padrão `:-`, variável obrigatória `:?`, escape `$$`.
 
 Hoje a senha do banco está escrita em 3 lugares do `compose.yaml`. Vamos centralizar. Crie o arquivo `.env` (o Compose lê esse arquivo automaticamente, na mesma pasta do `compose.yaml`):
 
@@ -983,7 +983,7 @@ POSTGRES_DB=email_sender
 WORKER_DELAY=5
 ```
 
-Crie também um `.env.example` (mesma estrutura, **sem segredos reais**; é o que vai para o Git) e um `.gitignore`:
+Crie também um `.env.example` (mesma estrutura, **sem segredos reais**; é o que vai para o Git):
 
 ```env
 WEB_PORT=8080
@@ -992,6 +992,8 @@ POSTGRES_PASSWORD=defina-uma-senha
 POSTGRES_DB=email_sender
 WORKER_DELAY=5
 ```
+
+E um `.gitignore`:
 
 ```text
 .env
@@ -1122,7 +1124,7 @@ docker compose up -d --wait
 WEB_PORT=9000 docker compose config | grep published
 ```
 
-Aparece `published: "9000"`: a variável do shell tem prioridade sobre o `.env`. (Por isso, em máquinas diferentes, o mesmo projeto pode se comportar diferente sem você perceber.)
+Aparece `published: "9000"`: a variável do shell tem prioridade sobre o `.env`. (Por isso, em máquinas diferentes, o mesmo projeto pode se comportar diferente sem você perceber.).
 
 **Experimento 3: variável obrigatória faltando.** Renomeie o `.env` para `.env.bak` e rode `docker compose config`. O Compose para com a sua mensagem `defina POSTGRES_PASSWORD no .env`. Renomeie de volta.
 
